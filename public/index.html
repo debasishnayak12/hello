@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real-Time Chat</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div id="chat-window">
+        <ul id="messages"></ul>
+    </div>
+    <form id="chat-form">
+        <input id="message-input" autocomplete="off" placeholder="Type a message..." />
+        <button type="submit">Send</button>
+    </form>
+
+    <!-- Include Socket.IO client library -->
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        // Connect to the Socket.IO server
+        const socket = io();
+
+        // Select DOM elements
+        const form = document.getElementById('chat-form');
+        const input = document.getElementById('message-input');
+        const messages = document.getElementById('messages');
+
+        // Handle form submission
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const message = input.value.trim();
+            if (message) {
+                // Emit the message to the server
+                socket.emit('chat message', message);
+                input.value = ''; // Clear the input field
+            }
+        });
+
+        // Listen for incoming messages from the server
+        socket.on('chat message', (message) => {
+            const item = document.createElement('li');
+            item.textContent = message;
+            messages.appendChild(item);
+            messages.scrollTop = messages.scrollHeight; // Auto-scroll to the latest message
+        });
+    </script>
+</body>
+
+</html>
